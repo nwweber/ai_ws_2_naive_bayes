@@ -30,5 +30,10 @@ enron1_ham_list = read_directory(enron1_ham_path)
 enron1_spam_list = read_directory(enron1_spam_path)
 
 # creating the dictionary
-dict_url = "http://www.manythings.org/vocabulary/lists/l/words.php?f=noll01"
 
+dict_html_list = read_directory(os.path.join("data", "dictionaries"))
+words = []
+for dict_html in dict_html_list:
+    soup = BeautifulSoup(dict_html)
+    for li in soup.ul.children:
+        words.append(li.text)
