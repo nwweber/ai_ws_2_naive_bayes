@@ -1,0 +1,34 @@
+\documentclass{hwclass}
+
+\title{AI at the Webscale - Homework - Week 2: Naive Bayes}
+\author{Niklas Weber\\s0841420}
+
+\begin{document}
+\maketitle
+\chapter{Answers}
+\section{Open the data, create data set}
+See code
+
+\section{Estimate $phi$ parameters}
+See code
+
+\section{Classify enron2. Measure goodness. What measures do you use for that?}
+This is a classification problem, for which we know the true class labels. We can thus use accuracy as a measurement of performance. Accuracy is the relative amount of correct answers, i.e.\ :
+\begin{equation}
+\text{acc} = \frac{\#\text{correct answers}}{\#\text{all answers}}
+\end{equation}
+
+For our classifier, this is:
+
+\section{Discuss how you would deal with new words, i.e.\ words in emails that are not your dictionary}
+
+Two options seem to present themselves: Either ignore them, or incorporate them into our model. Ignoring them is easy. Incorporating them, however, could in principle be done in many different ways. For example, one could rebuild the whole model, adding the new word to the feature set. One could also introduce an "unknown words" feature, which captures all words not in the model.
+
+How should we decide what to do? In general, a good approach is: if it helps, we should do it. What can we reasonably expect to help? Seeing that we want to discriminate between classes, we want to find features that help us discern the difference between the spam/ham classes. Features tend to be helpful if they are somewhat typical for a class, meaning: they correlate more with one class than with the other. This, for example, is not the case if a word just happens to occur in nearly all of the emails. The opposite situation, however, is also problematic: if we come across a new word, and it only ever appears in this one email (e.g.\ because it is a weird missspelling of a word), it also does not give us much useful information. In this case, we can not generalize based on this feature, it is only relevant to this one document.
+
+As such, a simple approach might be to count how often a word appears that is not in our model. If it crosses a certain threshold, we could try rebuilding the model including this new word. Another, less naive, measure of useful 'term frequency - inverse document frequency' (tf-idf), which captures the idea of "not too common, not too specific" discussed above. Again, if a word seems to be promising enough according to this measure, one could incorporate it into the model. Other measures, such as correlation with the class variable, might also be viable. Until the word has been deemed useful, it should be ignored.
+
+\section{Implement the multinomial event model}
+I have not done so.
+
+\end{document}

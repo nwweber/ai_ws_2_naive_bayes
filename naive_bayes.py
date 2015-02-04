@@ -56,3 +56,5 @@ def convert_to_feature_space(email_list, word_dict):
 
 enron1_ham_feature_frame = convert_to_feature_space(enron1_ham_list, word_dict)
 enron1_spam_feature_frame = convert_to_feature_space(enron1_spam_list, word_dict)
+
+
