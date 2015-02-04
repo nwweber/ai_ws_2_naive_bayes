@@ -5,10 +5,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+from bs4 import BeautifulSoup
 import os
 
-
+# reading the email data from the directories
 def read_directory(data_path):
     email_data_list = []
     for fname in os.listdir(data_path):
@@ -29,6 +29,6 @@ enron1_spam_path = os.path.join("data", "enron1", "spam")
 enron1_ham_list = read_directory(enron1_ham_path)
 enron1_spam_list = read_directory(enron1_spam_path)
 
-
-
+# creating the dictionary
+dict_url = "http://www.manythings.org/vocabulary/lists/l/words.php?f=noll01"
 
