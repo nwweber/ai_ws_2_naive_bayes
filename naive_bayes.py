@@ -23,6 +23,7 @@ def read_directory(data_path):
                 pass
     return email_data_list
 
+
 enron1_ham_path = os.path.join("data", "enron1", "ham")
 enron1_spam_path = os.path.join("data", "enron1", "spam")
 
@@ -32,8 +33,26 @@ enron1_spam_list = read_directory(enron1_spam_path)
 # creating the dictionary
 
 dict_html_list = read_directory(os.path.join("data", "dictionaries"))
-words = []
+# set to force uniqueness
+word_dict = set()
 for dict_html in dict_html_list:
     soup = BeautifulSoup(dict_html)
     for li in soup.ul.children:
-        words.append(li.text)
+        word_dict.add(li.text)
+# list to guarantee stable iteration order
+word_dict = list(word_dict)
+
+# translate email data into dictionary/feature space
+def convert_to_feature_space(email_list, word_dict):
+    features = []
+    for email in email_list:
+        # primitive. words could also be separated by special characters
+        email_words = email.split(" ")
+        email_features = {word: int(word in email_words) for word in word_dict}
+        features.append(email_features)
+    # convert to pandas data frame. because why not?
+    features_frame = pd.DataFrame(features)
+    return features_frame
+
+enron1_ham_feature_frame = convert_to_feature_space(enron1_ham_list, word_dict)
+enron1_spam_feature_frame = convert_to_feature_space(enron1_spam_list, word_dict)
