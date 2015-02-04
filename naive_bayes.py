@@ -43,6 +43,8 @@ for dict_html in dict_html_list:
 word_dict = list(word_dict)
 
 # translate email data into dictionary/feature space
+
+
 def convert_to_feature_space(email_list, word_dict):
     features = []
     for email in email_list:
@@ -58,14 +60,40 @@ enron1_ham_feature_frame = convert_to_feature_space(enron1_ham_list, word_dict)
 enron1_spam_feature_frame = convert_to_feature_space(enron1_spam_list, word_dict)
 
 
-def accuracy(predicted_series, real_series):
+def calc_accuracy(predicted_series, real_series):
     assert len(predicted_series) == len(real_series)
     correct_series = predicted_series * real_series
     correct = correct_series.sum()
     total = len(predicted_series)
     return correct/total
 
-nb_classifier = None
+
+class NBClassifier():
+
+    def __init__(self, word_dict):
+        self.phi_y = None
+        self.phi_x_y_1 = None
+        self.phi_x_y_0 = None
+        self.word_dict = word_dict
+
+    def fit(self, data_frame, label_series):
+        # compute phi_y
+        spam_count = label_series.sum()
+        ham_count = len(label_series) - spam_count
+        self.phi_y = spam_count / len(label_series)
+
+        # compute phi_x_y_1
+        self.phi_x_y_1 = {}
+        words_index = data_frame.columns
+        data_frame["the label"] = label_series
+        for word in words_index:
+
+
+    def predict(self, data_frame):
+        raise NotImplementedError
+
+
+nb_classifier = NBClassifier(word_dict)
 enron2_real = None
 enron1_combined_feature_frame = None
 enron1_combined_labels = None
@@ -73,4 +101,6 @@ enron2_combined_feature_frame = None
 nb_classifier.fit(enron1_combined_feature_frame, enron1_combined_labels)
 enron2_pred = nb_classifier.predict(enron2_combined_feature_frame)
 
-acc = accuracy(enron2_pred, enron2_real)
+acc = calc_accuracy(enron2_pred, enron2_real)
+
+print("the accuracy is", acc)
