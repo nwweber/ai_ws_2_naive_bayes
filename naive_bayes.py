@@ -64,3 +64,13 @@ def accuracy(predicted_series, real_series):
     correct = correct_series.sum()
     total = len(predicted_series)
     return correct/total
+
+nb_classifier = None
+enron2_real = None
+enron1_combined_feature_frame = None
+enron1_combined_labels = None
+enron2_combined_feature_frame = None
+nb_classifier.fit(enron1_combined_feature_frame, enron1_combined_labels)
+enron2_pred = nb_classifier.predict(enron2_combined_feature_frame)
+
+acc = accuracy(enron2_pred, enron2_real)
