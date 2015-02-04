@@ -58,3 +58,9 @@ enron1_ham_feature_frame = convert_to_feature_space(enron1_ham_list, word_dict)
 enron1_spam_feature_frame = convert_to_feature_space(enron1_spam_list, word_dict)
 
 
+def accuracy(predicted_series, real_series):
+    assert len(predicted_series) == len(real_series)
+    correct_series = predicted_series * real_series
+    correct = correct_series.sum()
+    total = len(predicted_series)
+    return correct/total

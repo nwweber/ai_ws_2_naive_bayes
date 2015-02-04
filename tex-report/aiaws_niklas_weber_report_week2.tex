@@ -7,12 +7,31 @@
 \maketitle
 \chapter{Answers}
 \section{Open the data, create data set}
-See code
+See code. 
 
-\section{Estimate $phi$ parameters}
+Commentary: scraping the dictionary from the website proved problematic. The server would return inconsistent data starting from page three of the "Top 3000 US English Words" list. Ugly workaround: download the HTML files by hand. Parsing/building the dictionary is still done automatically.
+
+Reading the email data also had its quirks: The encoding seems to differ between emails(?). My temporary solution was to simply skip all problematic documents, which still left me with more than 3600. A few extra documents did not seem worth getting into encoding hell over.
+
+\section{Estimate $\phi$ parameters}
 See code
 
 \section{Classify enron2. Measure goodness. What measures do you use for that?}
+
+\subsection{Classification}
+Classification works as follows: Compute $p(y=1|x)$. If it is greater than $0.5$ classify this email as spam. If it is $0.5$ exactly one can decide arbitrarily, so treating it as ham is just as good. All of this assume a uniform decision function.
+
+For the sake of convenience, one can also choose to omit calculating the normalizing constant involved, i.e.\ the denominator in Bayes' theorem. In this case, one would check whether $p(y=1, x) > p(y=0, x)$.
+
+Let's have a look at the equations:
+\begin{align}
+p(y=1, x) 	&=	p(x|y=1) * p(y=1)\\
+			&=	\left(\prod_{j=1}^{w} p(x_j|y=1) \right) * p(y=1)\\
+			&=	\left(\prod_{j=1}^{w} B(x_j|\phi_{j|y=1}) \right) * B(y=1|\phi_y)
+\end{align}
+in which $B(\cdot|\phi)$ is a Bernoulli distribution having parameter $\phi$. $p(y=0, x)$ works the same, \textit{mutatis mutandis}.
+
+\subsection{Evaluation}
 This is a classification problem, for which we know the true class labels. We can thus use accuracy as a measurement of performance. Accuracy is the relative amount of correct answers, i.e.\ :
 \begin{equation}
 \text{acc} = \frac{\#\text{correct answers}}{\#\text{all answers}}
