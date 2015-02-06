@@ -77,6 +77,9 @@ class NBClassifier():
         self.word_dict = word_dict
 
     def fit(self, data_frame, label_series):
+        words_index = data_frame.columns
+        data_frame["the label"] = label_series
+
         # compute phi_y
         spam_count = label_series.sum()
         ham_count = len(label_series) - spam_count
@@ -84,10 +87,17 @@ class NBClassifier():
 
         # compute phi_x_y_1
         self.phi_x_y_1 = {}
-        words_index = data_frame.columns
-        data_frame["the label"] = label_series
         for word in words_index:
+            count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 1)])
+            param = count / spam_count
+            self.phi_x_y_1[word] = param
 
+        # compute phi_x_y_0
+        self.phi_x_y_0 = {}
+        for word in words_index:
+            count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 0)])
+            param = count / ham_count
+            self.phi_x_y_0[word] = param
 
     def predict(self, data_frame):
         raise NotImplementedError
