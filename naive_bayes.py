@@ -67,14 +67,15 @@ def calc_accuracy(predicted_series, real_series):
     total = len(predicted_series)
     return correct/total
 
+def calc_bernoulli(x, p):
+    return (p**x) * ((1-p)**(1-x))
 
 class NBClassifier():
 
-    def __init__(self, word_dict):
+    def __init__(self):
         self.phi_y = None
         self.phi_x_y_1 = None
         self.phi_x_y_0 = None
-        self.word_dict = word_dict
 
     def fit(self, data_frame, label_series):
         words_index = data_frame.columns
@@ -100,10 +101,19 @@ class NBClassifier():
             self.phi_x_y_0[word] = param
 
     def predict(self, data_frame):
-        raise NotImplementedError
+        predictions = []
+        words_index = data_frame.columns
+        for index, row in data_frame.iterrows():
+            p_spam = 0
+            p_ham = 0
+            temp = 1
+            for word in words_index:
+                temp *= calc_bernoulli(INSERT VARIABLES)
+            predictions.append(int(p_spam > p_ham))
+        return predictions
 
 
-nb_classifier = NBClassifier(word_dict)
+nb_classifier = NBClassifier()
 enron2_real = None
 enron1_combined_feature_frame = None
 enron1_combined_labels = None
