@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 import os
 
+print("reading the data")
 # reading the email data from the directories
 def read_directory(data_path):
     email_data_list = []
@@ -32,7 +33,7 @@ enron1_ham_list = read_directory(enron1_ham_path)
 enron1_spam_list = read_directory(enron1_spam_path)
 
 # creating the dictionary
-
+print("creating the dictionary")
 dict_html_list = read_directory(os.path.join("data", "dictionaries"))
 # set to force uniqueness
 word_dict = set()
@@ -57,8 +58,25 @@ def convert_to_feature_space(email_list, word_dict):
     features_frame = pd.DataFrame(features)
     return features_frame
 
+print("converting to feature space")
 enron1_ham_feature_frame = convert_to_feature_space(enron1_ham_list, word_dict)
 enron1_spam_feature_frame = convert_to_feature_space(enron1_spam_list, word_dict)
+
+
+enron2_ham_path = os.path.join("data", "enron2", "ham")
+enron2_spam_path = os.path.join("data", "enron2", "spam")
+
+enron2_ham_list = read_directory(enron2_ham_path)
+enron2_spam_list = read_directory(enron2_spam_path)
+
+enron2_ham_feature_frame = convert_to_feature_space(enron2_ham_list, word_dict)
+enron2_spam_feature_frame = convert_to_feature_space(enron2_spam_list, word_dict)
+
+enron2_real = pd.Series(([0] * len(enron2_ham_feature_frame) + ([1] * len(enron2_spam_feature_frame))))
+enron1_combined_labels = pd.Series(([0] * len(enron1_ham_feature_frame) + ([1] * len(enron1_spam_feature_frame))))
+enron1_combined_feature_frame = enron1_ham_feature_frame.append(enron1_spam_feature_frame)
+enron2_combined_feature_frame = enron2_ham_feature_frame.append(enron2_spam_feature_frame)
+
 
 
 def calc_accuracy(predicted_series, real_series):
@@ -66,13 +84,14 @@ def calc_accuracy(predicted_series, real_series):
     correct_series = predicted_series * real_series
     correct = correct_series.sum()
     total = len(predicted_series)
-    return correct/total
+    return correct / total
+
 
 def calc_bernoulli(x, p):
-    return (p**x) * ((1-p)**(1-x))
+    return (p ** x) * ((1 - p) ** (1 - x))
+
 
 class NBClassifier():
-
     def __init__(self):
         self.phi_y = None
         self.phi_x_y_1 = None
@@ -120,23 +139,10 @@ class NBClassifier():
 
 nb_classifier = NBClassifier()
 
-
-enron2_ham_path = os.path.join("data", "enron2", "ham")
-enron2_spam_path = os.path.join("data", "enron2", "spam")
-
-enron2_ham_list = read_directory(enron2_ham_path)
-enron2_spam_list = read_directory(enron2_spam_path)
-
-
-enron2_ham_feature_frame = convert_to_feature_space(enron2_ham_list, word_dict)
-enron2_spam_feature_frame = convert_to_feature_space(enron2_spam_list, word_dict)
-
-
-enron2_real = pd.Series(([0]*len(enron2_ham_feature_frame) + ([1]*len(enron2_spam_feature_frame))))
-enron1_combined_labels = pd.Series(([0]*len(enron1_ham_feature_frame) + ([1]*len(enron1_spam_feature_frame))))
-enron1_combined_feature_frame = enron1_ham_feature_frame.append(enron1_spam_feature_frame)
-enron2_combined_feature_frame = enron2_ham_feature_frame.append(enron2_spam_feature_frame)
+print("fitting the model")
 nb_classifier.fit(enron1_combined_feature_frame, enron1_combined_labels)
+
+print("predicting")
 enron2_pred = nb_classifier.predict(enron2_combined_feature_frame)
 
 acc = calc_accuracy(enron2_pred, enron2_real)
