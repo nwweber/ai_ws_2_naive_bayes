@@ -115,9 +115,9 @@ def calc_bernoulli(x, p):
 
 class NBClassifier():
     def __init__(self):
-        self.phi_y = None
-        self.phi_x_y_1 = None
-        self.phi_x_y_0 = None
+        self.phi_y = 0
+        self.phi_x_y_1 = []
+        self.phi_x_y_0 = []
 
     def fit(self, data_frame, label_series):
         words_index = data_frame.columns
@@ -157,14 +157,15 @@ class NBClassifier():
         return predictions
 
 
-nb_classifier = NBClassifier()
+if __name__ == "__main__":
+    nb_classifier = NBClassifier()
 
-print("fitting the model")
-nb_classifier.fit(enron1_combined_feature_frame, enron1_combined_labels)
+    print("fitting the model")
+    nb_classifier.fit(enron1_combined_feature_frame, enron1_combined_labels)
 
-print("predicting")
-enron2_pred = nb_classifier.predict(enron2_combined_feature_frame)
+    print("predicting")
+    enron2_pred = nb_classifier.predict(enron2_combined_feature_frame)
 
-acc = calc_accuracy(enron2_pred, enron2_combined_labels)
+    acc = calc_accuracy(enron2_pred, enron2_combined_labels)
 
-print("the accuracy is", acc)
+    print("the accuracy is", acc)
