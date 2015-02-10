@@ -13,11 +13,12 @@ def read_directory(data_path):
     email_data_list = []
     for fname in os.listdir(data_path):
         fpath = os.path.join(data_path, fname)
-        with open(fpath, encoding="utf8") as f:
+        with open(fpath, encoding="latin1") as f:
             try:
                 contents = f.read()
                 email_data_list.append(contents)
             except UnicodeDecodeError:
+                print("Warning: skipped input file due to encoding errors")
                 # this is a dirty hack
                 # but figuring out encodings is a dirty business
                 pass
@@ -106,18 +107,35 @@ class NBClassifier():
         for index, row in data_frame.iterrows():
             p_spam = 0
             p_ham = 0
-            temp = 1
+            temp_ham = 1
+            temp_spam = 1
             for word in words_index:
-                temp *= calc_bernoulli(INSERT VARIABLES)
+                temp_ham *= calc_bernoulli(row[word], self.phi_x_y_0[word])
+                temp_ham *= calc_bernoulli(row[word], self.phi_x_y_1[word])
+            p_ham = temp_ham * self.phi_y
+            p_spam = temp_spam * self.phi_y
             predictions.append(int(p_spam > p_ham))
         return predictions
 
 
 nb_classifier = NBClassifier()
-enron2_real = None
-enron1_combined_feature_frame = None
-enron1_combined_labels = None
-enron2_combined_feature_frame = None
+
+
+enron2_ham_path = os.path.join("data", "enron2", "ham")
+enron2_spam_path = os.path.join("data", "enron2", "spam")
+
+enron2_ham_list = read_directory(enron2_ham_path)
+enron2_spam_list = read_directory(enron2_spam_path)
+
+
+enron2_ham_feature_frame = convert_to_feature_space(enron2_ham_list, word_dict)
+enron2_spam_feature_frame = convert_to_feature_space(enron2_spam_list, word_dict)
+
+
+enron2_real = pd.Series(([0]*len(enron2_ham_feature_frame) + ([1]*len(enron2_spam_feature_frame))))
+enron1_combined_labels = pd.Series(([0]*len(enron1_ham_feature_frame) + ([1]*len(enron1_spam_feature_frame))))
+enron1_combined_feature_frame = enron1_ham_feature_frame.append(enron1_spam_feature_frame)
+enron2_combined_feature_frame = enron2_ham_feature_frame.append(enron2_spam_feature_frame)
 nb_classifier.fit(enron1_combined_feature_frame, enron1_combined_labels)
 enron2_pred = nb_classifier.predict(enron2_combined_feature_frame)
 
