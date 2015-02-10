@@ -9,10 +9,6 @@ from bs4 import BeautifulSoup
 import os
 import pickle
 
-FROM_SCRATCH = False
-pickle_path = os.path.join("data", "data.pickle")
-
-
 def read_data():
     print("reading the data")
     # reading the email data from the directories
@@ -115,14 +111,10 @@ class NBClassifier():
         # compute phi_y
         spam_count = label_series.sum()
         ham_count = len(label_series) - spam_count
-        self.phi_y = spam_count / (len(label_series) + 2)
+        self.phi_y = self._calc_phi_y(label_series)
 
         # compute phi_x_y_1
-        self.phi_x_y_1 = {}
-        for word in words_index:
-            count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 1)])
-            param = (count + 1) / (spam_count + 2)
-            self.phi_x_y_1[word] = param
+        self.phi_x_y_1 = self._calculatePhiXY1(data_frame, label_series)
 
         # compute phi_x_y_0
         self.phi_x_y_0 = {}
@@ -145,9 +137,25 @@ class NBClassifier():
             predictions.append(int(p_spam > p_ham))
         return predictions
 
+    @staticmethod
+    def _calc_phi_y(label_series):
+        return label_series.sum() / (len(label_series) + 2)
+
+    def _calculatePhiXY1(self, data_frame, label_series):
+        spam_count = label_series.sum()
+        return_dict = {}
+        for word in data_frame.columns:
+            if word == "the label":
+                continue
+            count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 1)])
+            param = (count + 1) / (spam_count + 2)
+            return_dict[word] = param
+        return return_dict
+
 
 if __name__ == "__main__":
-
+    FROM_SCRATCH = False
+    pickle_path = os.path.join("data", "data.pickle")
     if FROM_SCRATCH:
         print("from scratch")
         enron1_combined_feature_frame, enron1_combined_labels, enron2_combined_feature_frame, enron2_combined_labels = read_data()
