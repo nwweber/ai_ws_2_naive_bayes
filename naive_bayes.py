@@ -106,7 +106,6 @@ class NBClassifier():
 
     def fit(self, data_frame, label_series):
         words_index = data_frame.columns
-        data_frame["the label"] = label_series
 
         # compute phi_y
         spam_count = label_series.sum()
@@ -114,12 +113,12 @@ class NBClassifier():
         self.phi_y = self._calc_phi_y(label_series)
 
         # compute phi_x_y_1
-        self.phi_x_y_1 = self._calculatePhiXY1(data_frame, label_series)
+        self.phi_x_y_1 = self._calc_phi_x_y_1(data_frame, label_series)
 
         # compute phi_x_y_0
         self.phi_x_y_0 = {}
         for word in words_index:
-            count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 0)])
+            count = len(data_frame[(data_frame[word] == 1) & (label_series == 0)])
             param = (count + 1) / (ham_count + 2)
             self.phi_x_y_0[word] = param
 
@@ -141,13 +140,12 @@ class NBClassifier():
     def _calc_phi_y(label_series):
         return label_series.sum() / (len(label_series) + 2)
 
-    def _calculatePhiXY1(self, data_frame, label_series):
+    @staticmethod
+    def _calc_phi_x_y_1(data_frame, label_series):
         spam_count = label_series.sum()
         return_dict = {}
         for word in data_frame.columns:
-            if word == "the label":
-                continue
-            count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 1)])
+            count = len(data_frame[(data_frame[word] == 1) & (label_series == 1)])
             param = (count + 1) / (spam_count + 2)
             return_dict[word] = param
         return return_dict
