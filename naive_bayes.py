@@ -12,10 +12,9 @@ import pickle
 FROM_SCRATCH = False
 pickle_path = os.path.join("data", "data.pickle")
 
-print("reading the data")
-
 
 def read_data():
+    print("reading the data")
     # reading the email data from the directories
     def read_directory(data_path):
         email_data_list = []
@@ -91,19 +90,9 @@ def read_data():
     return out_tuple
 
 
-if FROM_SCRATCH:
-    print("from scratch")
-    enron1_combined_feature_frame, enron1_combined_labels, enron2_combined_feature_frame, enron2_combined_labels = read_data()
-else:
-    print("from the pickle file", pickle_path)
-    with open(pickle_path, "rb") as pickle_file:
-        enron1_combined_feature_frame, enron1_combined_labels, enron2_combined_feature_frame, enron2_combined_labels = pickle.load(
-            pickle_file)
-
-
 def calc_accuracy(predicted_series, real_series):
     assert len(predicted_series) == len(real_series)
-    correct_series = predicted_series * real_series
+    correct_series = predicted_series ^ real_series
     correct = correct_series.sum()
     total = len(predicted_series)
     return correct / total
@@ -158,6 +147,16 @@ class NBClassifier():
 
 
 if __name__ == "__main__":
+
+    if FROM_SCRATCH:
+        print("from scratch")
+        enron1_combined_feature_frame, enron1_combined_labels, enron2_combined_feature_frame, enron2_combined_labels = read_data()
+    else:
+        print("from the pickle file", pickle_path)
+        with open(pickle_path, "rb") as pickle_file:
+            enron1_combined_feature_frame, enron1_combined_labels, enron2_combined_feature_frame, enron2_combined_labels = pickle.load(
+                pickle_file)
+
     nb_classifier = NBClassifier()
 
     print("fitting the model")
