@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import os
 import pickle
 
-FROM_SCRATCH = True
+FROM_SCRATCH = False
 pickle_path = os.path.join("data", "data.pickle")
 
 print("reading the data")
@@ -126,28 +126,26 @@ class NBClassifier():
         # compute phi_y
         spam_count = label_series.sum()
         ham_count = len(label_series) - spam_count
-        self.phi_y = spam_count / len(label_series)
+        self.phi_y = spam_count / (len(label_series) + 2)
 
         # compute phi_x_y_1
         self.phi_x_y_1 = {}
         for word in words_index:
             count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 1)])
-            param = count / spam_count
+            param = (count + 1) / (spam_count + 2)
             self.phi_x_y_1[word] = param
 
         # compute phi_x_y_0
         self.phi_x_y_0 = {}
         for word in words_index:
             count = len(data_frame[(data_frame[word] == 1) & (data_frame["the label"] == 0)])
-            param = count / ham_count
+            param = (count + 1) / (ham_count + 2)
             self.phi_x_y_0[word] = param
 
     def predict(self, data_frame):
         predictions = []
         words_index = data_frame.columns
         for index, row in data_frame.iterrows():
-            p_spam = 0
-            p_ham = 0
             temp_ham = 1
             temp_spam = 1
             for word in words_index:
