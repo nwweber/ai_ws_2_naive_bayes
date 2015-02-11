@@ -8,9 +8,9 @@ import pandas as pd
 class AccuracyTest(unittest.TestCase):
     def testAccuray(self):
         """"accuracy is calculated correctly"""
-        predicted = pd.Series([0, 0, 0])
-        real = pd.Series([0, 0, 1])
-        self.assertEqual(nb.calc_accuracy(predicted, real), 1 / 3)
+        predicted = pd.Series([0, 0, 1, 1, 1])
+        real = pd.Series([0, 1, 0, 1, 1])
+        self.assertEqual(nb.calc_accuracy(predicted, real), 3 / 5)
 
 
 class BernoulliTest(unittest.TestCase):

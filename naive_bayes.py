@@ -88,7 +88,7 @@ def read_data():
 
 def calc_accuracy(predicted_series, real_series):
     assert len(predicted_series) == len(real_series)
-    correct_series = predicted_series ^ real_series
+    correct_series = ~(predicted_series ^ real_series)
     correct = correct_series.sum()
     total = len(predicted_series)
     return correct / total
@@ -130,7 +130,7 @@ class NBClassifier():
             temp_spam = 1
             for word in words_index:
                 temp_ham *= calc_bernoulli(row[word], self.phi_x_y_0[word])
-                temp_ham *= calc_bernoulli(row[word], self.phi_x_y_1[word])
+                temp_spam *= calc_bernoulli(row[word], self.phi_x_y_1[word])
             p_ham = temp_ham * self.phi_y
             p_spam = temp_spam * self.phi_y
             predictions.append(int(p_spam > p_ham))
